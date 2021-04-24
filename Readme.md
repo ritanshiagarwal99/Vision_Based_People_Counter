@@ -4,7 +4,7 @@
 This can be achieved by performing face detection and tracking algorithm. For this purpose, OpenCV and MotPy has been used in this project. 
 </p>
 <h3>Flow Chart of the System</h3>
-<img src="\images\flow_chart.jpeg">
+<img src="/images/flow_chart.jpeg">
 <h3>Implementation</h3>
 1. Firstly, We need to install some libraries for our python code to run.<br><br>
 1.1. Install OpenCV Contrib library using pip (We can install just OpenCV also, but it limits itself in some functions)
