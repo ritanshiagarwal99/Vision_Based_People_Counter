@@ -3,11 +3,15 @@ import numpy as np
 from motpy import MultiObjectTracker, Detection
 from motpy.core import setup_logger
 from motpy.testing_viz import draw_track
-#print(cv2.__version__)
+
+webcam_src = 0  #webcam_src = 1 if using external USB camera 
 logger = setup_logger(__name__, 'DEBUG', is_main=True)
 font = cv2.FONT_HERSHEY_SIMPLEX
+
+#Initialising face coordinates
 x_old = 0
 y_old = 0
+
 def detectFaceDNN(net, frame, conf_threshold=0.5):
     frameOpencvDnn = frame.copy()
     frameHeight = frameOpencvDnn.shape[0]
@@ -51,18 +55,21 @@ def ExtractBoxValues(tracks):
         y_new = tracks[0][1][1]
     return x_new, y_new
 
-modelFile = "res10_300x300_ssd_iter_140000_fp16.caffemodel"
-configFile = "deploy.prototxt"
+#Including face detection OpenCV neural network model file
+modelFile = "caffe_model/res10_300x300_ssd_iter_140000_fp16.caffemodel"
+configFile = "caffe_model/deploy.prototxt"
 net = cv2.dnn.readNetFromCaffe(configFile, modelFile)
 net.setPreferableBackend(cv2.dnn.DNN_TARGET_CPU)
+
 #face tracking
 model_spec = {'order_pos': 1, 'dim_pos': 2,
                   'order_size': 0, 'dim_size': 2,
                   'q_var_pos': 5000., 'r_var_pos': 0.1}
 dt = 1 / 30.0  # assume 30 fps
 tracker = MultiObjectTracker(dt=dt, model_spec=model_spec)
+
 # perform face detection on webcam
-video_capture = cv2.VideoCapture(0)
+video_capture = cv2.VideoCapture(webcam_src)
 while True:
     ret, frame = video_capture.read()
     if frame is None:
@@ -70,10 +77,13 @@ while True:
     frame = cv2.resize(frame, dsize=None, fx=1.98, fy=1.37)
     outOpencvDnn , bboxes , detections= detectFaceDNN(net, frame)
     logger.debug(f'detections: {bboxes}')
-    #trcking tke plce with the help of motpy librry
+    
+    #tracking take place with the help of motpy library
     tracker.step(detections)
     tracks = tracker.active_tracks(min_steps_alive=3)
     logger.debug(f'tracks: {tracks}')
+
+    # people counting algorithm (to be completed)
     print(outOpencvDnn.shape)
     x_new, y_new = ExtractBoxValues(tracks)
     print("x_old = " + str(x_old))
@@ -84,6 +94,7 @@ while True:
         print("Left")
     x_old, y_old = StorePreviousValues(x_new, y_new)
     
+    
     for track in tracks:
         draw_track(outOpencvDnn, track)
     total_persons = len(bboxes)
@@ -93,7 +104,7 @@ while True:
                 font,
                 1,(255,0,0),2)
     cv2.imshow('Video', outOpencvDnn)
-    if cv2.waitKey(1) & 0xFF == ord('p'):
+    if cv2.waitKey(1) & 0xFF == ord('p'): # press 'p' to terminate program
         break
 video_capture.release()
 cv2.destroyAllWindows()

@@ -1,8 +1,11 @@
 <h1>Vision Based People Counter</h1>
 <h2>Detailed Implementation using OpenCV and MotPy in Python3</h2>
 <p>Vision based people counter has several remarkable applications like Security & Survillence, Crowd Monitoring, and sales forcasting of a certain store as well. 
-This can be achieved by performing face detection and tracking algorithm.For this purpose, OpenCV and MotPy has been used in this project. 
+This can be achieved by performing face detection and tracking algorithm. For this purpose, OpenCV and MotPy has been used in this project. 
 </p>
+<h3>Flow Chart of the System</h3>
+<img src="\images\flow_chart.jpeg">
+<h3>Implementation</h3>
 1. Firstly, We need to install some libraries for our python code to run.<br><br>
 1.1. Install OpenCV Contrib library using pip (We can install just OpenCV also, but it limits itself in some functions)
 <pre><code>pip install opencv-contrib-python
